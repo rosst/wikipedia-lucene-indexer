@@ -1,0 +1,3 @@
+This project use ElasticSearch to index Wikipedia data.
+
+To build the project run "mvn clean install". 
