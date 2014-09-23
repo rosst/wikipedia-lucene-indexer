@@ -9,6 +9,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.lucene.benchmark.byTask.feeds.DocMaker;
+import org.apache.lucene.benchmark.utils.ExtractWikipedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +110,19 @@ public class IndexerCLI
         }
 
         LOGGER.info("Using " + numThreads + " threads");
+         
+        String extractArgs[] = new String[]{"-i",articles.getAbsolutePath(),"-o",output.getAbsolutePath(),"-d"};
+        
+        try {
+        	
+			ExtractWikipedia.main(extractArgs);
+			
+		} catch (Exception e) {
+	
+			LOGGER.error("Error extracting articles: " + e.getMessage());
+			
+		}
+
         
     }
     
