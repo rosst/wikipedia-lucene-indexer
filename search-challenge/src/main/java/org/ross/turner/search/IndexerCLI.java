@@ -16,8 +16,12 @@ import org.slf4j.LoggerFactory;
  *<p>
  * Command line interface for indexing Wikipedia articles.
  * 
- * Options as follows
- * 
+ * usage: org.ross.turner.search.IndexerCLI:
+ * <li>
+ * <ul>--input <input>        the input wikipedia aritcle file</ul>
+ * <ul>--numThreads <numThreads>   the number of threads to use for indexing</ul>
+ * <ul>--output <output>      the output path</ul>
+ * </li>
  *</p>
  */
 public class IndexerCLI 
@@ -47,7 +51,7 @@ public class IndexerCLI
         
         options.addOption(sumOpt);
         
-        Option siteOpt = OptionBuilder.withArgName(INPUTOPTION).withLongOpt(NUMTHREADSOPTION).hasArg().withDescription("the number of threads to use for indexing (default is 1)").isRequired(false).create();
+        Option siteOpt = OptionBuilder.withArgName(NUMTHREADSOPTION).withLongOpt(NUMTHREADSOPTION).hasArg().withDescription("the number of threads to use for indexing (default is 1)").isRequired(false).create();
         
         options.addOption(siteOpt);
 
