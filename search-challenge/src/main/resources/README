@@ -1,0 +1,3 @@
+Run the following script to index data:
+
+bin/invent_wikepedia.sh
