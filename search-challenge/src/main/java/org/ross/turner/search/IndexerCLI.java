@@ -15,18 +15,15 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.benchmark.byTask.feeds.DocMaker;
-//import org.apache.lucene.benchmark.byTask.utils.FileUtils;
+
 import org.apache.lucene.benchmark.utils.ExtractWikipedia;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.IndexableFieldType;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -43,9 +40,6 @@ import org.slf4j.LoggerFactory;
  * <li>
  * <ul>
  * --input <input> the input wikipedia aritcle file
- * </ul>
- * <ul>
- * --numThreads <numThreads> the number of threads to use for indexing
  * </ul>
  * <ul>
  * --output <output> the output path
@@ -186,7 +180,7 @@ public class IndexerCLI {
 				
 				Document document = new Document();
 
-				String path = file.getCanonicalPath();
+				String path = file.getAbsolutePath();
 
 				BufferedReader reader = new BufferedReader(new FileReader(file));
 
@@ -196,7 +190,7 @@ public class IndexerCLI {
 
 				Document doc = new Document();
 				
-				doc.add(new TextField("path", file.getAbsolutePath(), Store.YES));
+				doc.add(new TextField("path", path, Store.YES));
 				
 				while ((nextLine = reader.readLine()) != null) {
 
