@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 public class IndexerCLI {
+	
 	private static final String INPUTOPTION = "input";
 
 	private static final String OUTPUTOPTION = "output";
@@ -221,7 +222,7 @@ public class IndexerCLI {
 			}
 			
 			LOGGER.info("No. of files to indexex: " + filesIndexed);
-
+			
 			indexWriter.commit();
 			
 			indexWriter.close();

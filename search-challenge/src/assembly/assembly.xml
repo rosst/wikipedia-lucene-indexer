@@ -19,20 +19,26 @@
 
 	<includeBaseDirectory>false</includeBaseDirectory>
 
-	<fileSets>
-		<fileSet>
-			<directory>${project.basedir}</directory>
-			<outputDirectory>/search</outputDirectory>
-			<includes>
-				<include>bin/*</include>
-			</includes>
-		</fileSet>
-	</fileSets>
 
 	<files>
 		<file>
+			<source>src/main/scripts/index_wikipedia.sh</source>
+			<outputDirectory>/search/bin</outputDirectory>
+			<filtered>true</filtered>
+		</file>
+		<file>
+			<source>src/main/scripts/query_wikipedia.sh</source>
+			<outputDirectory>/search/bin</outputDirectory>
+			<filtered>true</filtered>
+		</file>
+		<file>
 			<source>src/main/resources/README</source>
-			<outputDirectory>/search</outputDirectory>
+			<outputDirectory>/search/</outputDirectory>
+			<filtered>true</filtered>
+		</file>
+		<file>
+			<source>src/test/resources/enwiki-latest-pages-articles-99468.xml</source>
+			<outputDirectory>/search/data</outputDirectory>
 			<filtered>true</filtered>
 		</file>
 	</files>
