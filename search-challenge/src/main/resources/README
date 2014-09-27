@@ -1,3 +1,14 @@
-Run the following script to index data:
+This software distribution provides functionality to index and query a dump of
+wikipedia articles, found here:
+http://download.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2
 
-bin/invent_wikepedia.sh
+Some test data consisting of 99,468 lines of the dump can be found in:
+data/enwiki-latest-pages-articles-99468.xml
+
+Run the following script to index data: bin/index_wikipedia.sh
+
+bin/index_wikipedia.sh --input data/enwiki-latest-pages-articles-99468.xml --output index
+
+To query the created index use bin/query_wikipedia.sh:
+
+bin/query_wikipedia.sh --index index --maxRes 20

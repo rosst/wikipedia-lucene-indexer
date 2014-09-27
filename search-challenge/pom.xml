@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ross.turner.search</groupId>
-	<artifactId>search-challenge</artifactId>
+	<artifactId>index-wikipedia-dump</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>search-challenge</name>
+	<version>0.0.1</version>
+	<name>Index Wikipedia Dump</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
-			<version>4.10.0</version>
+			<version>4.9.0</version>
 		</dependency>
 
 		<dependency>

@@ -1,9 +1,7 @@
 package org.ross.turner.search;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import org.apache.commons.cli.BasicParser;
@@ -16,12 +14,9 @@ import org.apache.commons.cli.Options;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
@@ -29,9 +24,23 @@ import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * Command line interface for querying an index of Wikipedia articles built using
+ * {@link org.ross.turner.search.IndexerCLI}.
+ * 
+ * usage: org.ross.turner.search.QueryCLI
+ * <li>
+ * <ul>
+ *  --index <index> the index file
+ * </ul>
+ * <ul>
+ * --maxRes <maxRes> the maximum number of results to return
+ * </ul>
+ * </li>
+ * </p>
+ */
 public class QueryCLI {
-
-	private static final String QUERYOPTION = "query";
 
 	private static final String MAXRESOPTION = "maxRes";
 	
@@ -121,19 +130,19 @@ public class QueryCLI {
 				
 			}
 			
-			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LATEST);
+			StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 			
 			Query query;
 			
 			try {
 				
-				query = new QueryParser(Version.LATEST, "title", analyzer).parse(q);
+				query = new QueryParser(Version.LUCENE_CURRENT, "body", analyzer).parse(q);
 				
 				TopDocs docs = searcher.search(query, maxResults);
 				
 				for(int i = 0; i < docs.scoreDocs.length; i++){
 					
-					System.out.println(output(searcher.doc(docs.scoreDocs[i].doc)));
+					System.out.println(output(searcher.doc(docs.scoreDocs[i].doc),i+1));
 					
 				}
 				
@@ -153,17 +162,19 @@ public class QueryCLI {
 	
 	}
 	
-	private static String output(Document doc){
+	private static String output(Document doc, int pos){
 		
 		StringBuilder buf = new StringBuilder();
 		
+		buf.append(String.valueOf(pos)  + ". ");
+		
 		buf.append(doc.getField("title").name() + " : ");
 		
-		buf.append(doc.getField("title").stringValue() + " : \n");
+		buf.append(doc.getField("title").stringValue() + "\n");
 
 		buf.append(doc.getField("path").name() + " : ");
 		
-		buf.append(doc.getField("path").stringValue() + " : \n");
+		buf.append(doc.getField("path").stringValue() + "\n");
 		
 		return buf.toString();
 		

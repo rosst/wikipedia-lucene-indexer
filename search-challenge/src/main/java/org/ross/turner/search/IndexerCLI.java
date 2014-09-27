@@ -13,33 +13,35 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-
 import org.apache.lucene.benchmark.utils.ExtractWikipedia;
 import org.apache.lucene.document.Document;
-
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-
 import org.apache.commons.io.FileUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Command line interface for indexing Wikipedia articles.
+ * Command line interface for indexing Wikipedia articles from the 
+ * Wikipedia database (http://download.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2).
+ * 
+ * This class makes use of {@link org.apache.lucene.benchmark.utils.ExtractWikipedia} parse the xml dump and
+ * extract the articles as plain text. 
+ * 
+ * The index is built using {@link org.apache.lucene.index.IndexWriter}. The indexer is single threaded and the RAM buffer size is set to 512MB.
  * 
  * usage: org.ross.turner.search.IndexerCLI:
  * <li>
  * <ul>
- * --input <input> the input wikipedia aritcle file
+ * --input <input> the input wikipedia article file
  * </ul>
  * <ul>
  * --output <output> the output path
@@ -110,8 +112,20 @@ public class IndexerCLI {
 
 		LOGGER.info("Using output path " + output.getAbsolutePath());
 
-		File dumpOutput = new File(output.getAbsolutePath() + File.separator
+		String parentPath = output.getParent();
+		
+		File dumpOutput = null;
+		
+		if(parentPath != null){
+		
+			dumpOutput = new File(new File(parentPath) + File.separator
 				+ "dump");
+			
+		}else{
+			
+			dumpOutput = new File("dump");
+			
+		}
 
 		String extractArgs[] = new String[] { "-i", articles.getAbsolutePath(),
 				"-o", dumpOutput.getAbsolutePath(), "-d" };
@@ -145,17 +159,17 @@ public class IndexerCLI {
 
 		}
 
-		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LATEST);
+		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 
 		LOGGER.info("Using " + analyzer.getClass().getName()
 				+ " for tokenisation");
 
-		IndexWriterConfig config = new IndexWriterConfig(Version.LATEST,
+		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT,
 				analyzer);
 
 		config.setOpenMode(OpenMode.CREATE);
-
-		config.setRAMBufferSizeMB(256);
+		
+		config.setRAMBufferSizeMB(512);
 		
 		IndexWriter indexWriter = null;
 
@@ -166,8 +180,8 @@ public class IndexerCLI {
 			File dir = new File(dumpOutput.getAbsolutePath());
 
 			Iterator<File> files = FileUtils.iterateFiles(dir, null, true);
-
-			int filesIndexed = 0; 
+			
+			BufferedReader reader = null; 
 			
 			while(files.hasNext()) {
 
@@ -179,29 +193,27 @@ public class IndexerCLI {
 					
 				}
 				
-				Document document = new Document();
-
+				reader = new BufferedReader(new FileReader(file));
+				
 				String path = file.getAbsolutePath();
-
-				BufferedReader reader = new BufferedReader(new FileReader(file));
-
+				
 				String nextLine = null;
 
 				int offset = 1;
 
 				Document doc = new Document();
 				
-				doc.add(new TextField("path", path, Store.YES));
+				doc.add(new StringField("path", path, Store.YES));
 				
 				while ((nextLine = reader.readLine()) != null) {
-
+					
 					switch (offset) {
 						
-						case 5: doc.add(new TextField("body", nextLine, Store.NO));
+						case 5: doc.add(new TextField("body", nextLine, Store.NO)); break;
 						
 						case 4: break;
 						
-						case 3: doc.add(new TextField("title", nextLine, Store.YES));
+						case 3: doc.add(new StringField("title", nextLine, Store.YES)); break;
 						
 						case 2: break;
 						
@@ -213,27 +225,27 @@ public class IndexerCLI {
 					
 					offset++;
 
-				}
+				}	
 				
-				indexWriter.addDocument(document);
-				
-				filesIndexed++;
+				indexWriter.addDocument(doc);
 				
 			}
 			
-			LOGGER.info("No. of files to indexex: " + filesIndexed);
-			
 			indexWriter.commit();
+			
+			LOGGER.info("No. of files to indexed: " + indexWriter.numDocs());
 			
 			indexWriter.close();
 
+			reader.close();
+		    
 		} catch (IOException e) {
 
 			LOGGER.error("Error writing the index: " + e.getMessage());
 
 			System.exit(1);
 
-		}
+		} 
 
 		LOGGER.info("Indexing finished");
 
